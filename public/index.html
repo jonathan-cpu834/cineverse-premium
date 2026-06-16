@@ -1,3 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>CineVerse Premium</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Segoe UI',sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#0f172a,#020617);
+min-height:100vh;
+color:white;
+}
+
+header{
+padding:30px;
+text-align:center;
+background:rgba(255,255,255,.05);
+backdrop-filter:blur(10px);
+border-bottom:1px solid rgba(255,255,255,.1);
+}
+
+header h1{
+font-size:3rem;
+margin-bottom:10px;
+}
+
+header p{
+color:#cbd5e1;
+}
+
+.container{
+width:95%;
+max-width:1300px;
+margin:auto;
+padding:20px;
+}
+
+.dashboard{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+gap:20px;
+margin-bottom:30px;
+}
+
+.card{
+background:rgba(255,255,255,.08);
+backdrop-filter:blur(15px);
+padding:25px;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,.4);
+transition:.3s;
+}
+
+.card:hover{
+transform:translateY(-5px);
+}
+
+.card h2{
+font-size:2rem;
+margin-bottom:10px;
+}
+
+.formulario{
+background:white;
+color:black;
+padding:25px;
+border-radius:20px;
+margin-bottom:25px;
+}
+
+.formulario h2{
+margin-bottom:15px;
+}
+
+.inputs{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+}
+
+input{
+flex:1;
+padding:14px;
+border:1px solid #ddd;
+border-radius:10px;
+}
+
+button{
+padding:14px 18px;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.guardar{
+background:#2563eb;
+color:white;
+}
+
+.guardar:hover{
+background:#1d4ed8;
+}
+
+.editar{
+background:#f59e0b;
+color:white;
+margin-right:5px;
+}
+
+.editar:hover{
+background:#d97706;
+}
+
+.eliminar{
+background:#dc2626;
+color:white;
+}
+
+.eliminar:hover{
+background:#b91c1c;
+}
+
+.tabla{
+background:white;
+color:black;
+padding:25px;
+border-radius:20px;
+}
+
+.buscar{
+width:100%;
+margin-bottom:15px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th{
+background:#0f172a;
+color:white;
+padding:15px;
+}
+
+td{
+padding:15px;
+border-bottom:1px solid #ddd;
+text-align:center;
+}
+
+tr:hover{
+background:#f8fafc;
+}
+
+footer{
+text-align:center;
+padding:30px;
+color:#94a3b8;
+}
+
+</style>
+
+</head>
+<body>
+
+<header>
+<h1><i class="fa-solid fa-film"></i> CineVerse Premium</h1>
+<p>Sistema Profesional de Gestión de Películas</p>
+</header>
+
+<div class="container">
+
+<div class="dashboard">
+
+<div class="card">
+<h2 id="total">0</h2>
+<p>Películas Registradas</p>
+</div>
+
+<div class="card">
+<h2><i class="fa-solid fa-database"></i></h2>
+<p>MongoDB Atlas</p>
+</div>
+
+<div class="card">
+<h2><i class="fa-brands fa-node-js"></i></h2>
+<p>Node.js + Express</p>
+</div>
+
+</div>
+
+<div class="formulario">
+
+<h2><i class="fa-solid fa-plus"></i> Agregar / Editar Película</h2>
+
+<div class="inputs">
+
+<input
+type="text"
+id="titulo"
+placeholder="Título de la película">
+
+<input
+type="text"
+id="genero"
+placeholder="Género">
+
+<button
+id="btnGuardar"
+class="guardar"
+onclick="guardar()">
+Guardar
+</button>
+
+</div>
+
+</div>
+
+<div class="tabla">
+
+<input
+class="buscar"
+type="text"
+id="buscar"
+placeholder="🔍 Buscar película..."
+onkeyup="filtrar()">
+
+<table>
+
+<thead>
+<tr>
+<th>Título</th>
+<th>Género</th>
+<th>Acciones</th>
+</tr>
+</thead>
+
+<tbody id="lista"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<footer>
+© 2026 CineVerse Premium
+</footer>
+
 <script>
 
 const API="/peliculas";
@@ -29,8 +292,8 @@ html+=`
 <td>
 
 <button
-class="guardar"
-onclick="editar(
+class="editar"
+onclick="editarPelicula(
 '${p._id}',
 '${p.titulo}',
 '${p.genero}'
@@ -40,46 +303,28 @@ Editar
 
 <button
 class="eliminar"
-onclick="eliminar('${p._id}')">
+onclick="eliminarPelicula('${p._id}')">
 Eliminar
 </button>
 
 </td>
 </tr>
 `;
+
 });
 
 document.getElementById("lista").innerHTML=html;
 }
 
-function filtrar(){
-
-const texto=
-document.getElementById("buscar")
-.value
-.toLowerCase();
-
-const resultado=
-peliculas.filter(p=>
-p.titulo.toLowerCase().includes(texto) ||
-p.genero.toLowerCase().includes(texto)
-);
-
-mostrar(resultado);
-}
-
-function editar(id,titulo,genero){
+function editarPelicula(id,titulo,genero){
 
 editandoId=id;
 
-document.getElementById("titulo").value=
-titulo;
+document.getElementById("titulo").value=titulo;
+document.getElementById("genero").value=genero;
 
-document.getElementById("genero").value=
-genero;
-
-document.querySelector(".guardar")
-.innerText="Actualizar";
+document.getElementById("btnGuardar").innerText=
+"Actualizar";
 
 window.scrollTo({
 top:0,
@@ -120,8 +365,8 @@ body:JSON.stringify(datos)
 
 editandoId=null;
 
-document.querySelector(".guardar")
-.innerText="Guardar";
+document.getElementById("btnGuardar").innerText=
+"Guardar";
 
 }else{
 
@@ -142,7 +387,7 @@ cargar();
 
 }
 
-async function eliminar(id){
+async function eliminarPelicula(id){
 
 if(!confirm("¿Eliminar película?"))
 return;
@@ -155,6 +400,26 @@ cargar();
 
 }
 
+function filtrar(){
+
+const texto=
+document.getElementById("buscar")
+.value
+.toLowerCase();
+
+const resultado=
+peliculas.filter(p=>
+p.titulo.toLowerCase().includes(texto) ||
+p.genero.toLowerCase().includes(texto)
+);
+
+mostrar(resultado);
+
+}
+
 cargar();
 
 </script>
+
+</body>
+</html>
