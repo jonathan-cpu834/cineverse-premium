@@ -34,6 +34,20 @@ app.get('/peliculas', async(req,res)=>{
     res.json(peliculas);
 });
 
+// UPDATE
+app.put('/peliculas/:id', async(req,res)=>{
+
+    const pelicula =
+    await Pelicula.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new:true }
+    );
+
+    res.json(pelicula);
+
+});
+
 // DELETE
 app.delete('/peliculas/:id', async(req,res)=>{
     await Pelicula.findByIdAndDelete(req.params.id);
